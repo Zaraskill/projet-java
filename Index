@@ -1,0 +1,73 @@
+package projectClass;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.HashMap;
+
+public class Index {
+	private final HashMap<String, ArrayList<Integer> > index;
+	
+	private Index() {
+		index = new HashMap<String, ArrayList<Integer>>();
+	}
+	
+	public static Index createIndex(Path file) throws IOException {
+		Index index = new Index();
+		int i = 1;
+		try (BufferedReader reader =Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				StringTokenizer st = new StringTokenizer(line);
+				while (st.hasMoreTokens()) {
+					String word = st.nextToken();
+					String wordFinal ="";
+					for (int j = 0; j < word.length(); j++) {
+						char c = word.charAt(j);
+						if ( 65 <= c && c <= 90) {
+							c+=32;
+						}
+						wordFinal = wordFinal+c;
+					}
+					if (index.getIndex().containsKey(wordFinal)) {
+						index.getIndex().get(wordFinal).add(i);
+					}
+					else {
+						ArrayList<Integer> liste = new ArrayList<Integer>();
+						liste.add(i);
+						index.getIndex().put(wordFinal, liste);
+					}
+					i++;
+				}
+			}
+		}
+		
+		return index;
+	}
+	
+	@Override
+	public String toString() {
+		String chaine = new String("");
+		for (String i: index.keySet() ) {
+			chaine = chaine+ i+" "+index.get(i).toString()+"\n";
+		}
+		return chaine;
+	}
+	
+	public HashMap<String, ArrayList<Integer>> getIndex() {
+		return index;
+	}
+	
+	public static void main(String[] args) throws IOException {
+		Path file = Paths.get("C:\\Users\\Coco\\Documents\\test.txt");
+		Index index = Index.createIndex(file);
+		System.out.println(index.toString());
+	}
+	
+}
